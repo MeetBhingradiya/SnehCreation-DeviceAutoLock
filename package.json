@@ -1,0 +1,58 @@
+{
+    "name": "@sneh-creation/device-protector",
+    "version": "1.0.0",
+    "description": "Enterprise-grade device protection system for Windows 10/11 with auto-updates",
+    "main": "src/main.js",
+    "type": "module",
+    "scripts": {
+        "dev": "bun run --watch src/main.js",
+        "start": "bun run src/main.js",
+        "test": "bun test",
+        "setup-startup": "powershell -ExecutionPolicy Bypass -File setup-startup-clean.ps1",
+        "kill": "cmd /c kill.bat",
+        "start:clean": "bun run kill && bun run start",
+        "demo": "bun run start:clean",
+        "build": "bun build src/main.js --compile --outfile=dist/device-protector.exe --target=bun-windows-x64",
+        "build:node": "pkg src/main.js --targets node18-win-x64 --output dist/device-protector-node.exe",
+        "build:portable": "bun run build && bun run package:portable",
+        "build:all": "bun run build && bun run build:node && bun run package:portable",
+        "package:portable": "powershell -ExecutionPolicy Bypass -File scripts/create-portable.ps1"
+    },
+    "keywords": [
+        "device-protection",
+        "security",
+        "windows",
+        "enterprise",
+        "inactivity-monitor",
+        "screen-lock",
+        "sneh-creation"
+    ],
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/sneh-creation/device-protector.git"
+    },
+    "bugs": {
+        "url": "https://github.com/sneh-creation/device-protector/issues"
+    },
+    "homepage": "https://github.com/sneh-creation/device-protector#readme",
+    "engines": {
+        "bun": ">=1.0.0",
+        "node": ">=18.0.0"
+    },
+    "dependencies": {
+        "chalk": "^5.4.1",
+        "conf": "^11.0.2",
+        "express": "^4.18.2",
+        "winston": "^3.11.0"
+    },
+    "devDependencies": {
+        "@types/node": "^20.8.0",
+        "bun-types": "latest",
+        "pkg": "^5.8.1"
+    },
+    "optionalDependencies": {
+        "fsevents": "^2.3.3",
+        "node-notifier": "^10.0.1"
+    }
+}

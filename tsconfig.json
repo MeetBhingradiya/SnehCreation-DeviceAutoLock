@@ -1,0 +1,47 @@
+{
+    "compilerOptions": {
+        "target": "ES2022",
+        "module": "ESNext",
+        "moduleResolution": "bundler",
+        "noEmit": true,
+        "allowJs": true,
+        "allowImportingTsExtensions": true,
+        "allowSyntheticDefaultImports": true,
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+        "strict": true,
+        "noImplicitAny": true,
+        "skipLibCheck": true,
+        "resolveJsonModule": true,
+        "outDir": "./dist",
+        "rootDir": "./src",
+        "baseUrl": ".",
+        "paths": {
+            "@/*": [
+                "./src/*"
+            ],
+            "@ui/*": [
+                "./src/ui/*"
+            ],
+            "@utils/*": [
+                "./src/utils/*"
+            ],
+            "@config/*": [
+                "./config/*"
+            ]
+        }
+    },
+    "include": [
+        "src/**/*",
+        "*.ts",
+        "*.tsx"
+    ],
+    "exclude": [
+        "node_modules",
+        "dist",
+        "**/*.test.js"
+    ],
+    "types": [
+        "bun-types"
+    ]
+}

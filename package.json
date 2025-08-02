@@ -1,6 +1,6 @@
 {
     "name": "@sneh-creation/device-protector",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Enterprise-grade device protection system for Windows 10/11 with auto-updates",
     "main": "src/main.js",
     "type": "module",

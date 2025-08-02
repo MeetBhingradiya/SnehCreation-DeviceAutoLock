@@ -2,7 +2,6 @@
 
 import { createApp } from './app.js';
 import { DeviceProtector } from './core/protector.js';
-import { SystemTray } from './ui/tray.js';
 import { Logger } from './utils/logger.js';
 import { Config } from './config/settings.js';
 import chalk from 'chalk';
@@ -14,7 +13,6 @@ class SnehDeviceProtector {
         this.config = new Config();
         this.protector = new DeviceProtector(this.config);
         this.app = null;
-        this.tray = null;
         
         this.setupGracefulShutdown();
     }
@@ -31,10 +29,6 @@ class SnehDeviceProtector {
 
             // Start protection monitoring
             this.protector.start();
-
-            // Setup system tray
-            this.tray = new SystemTray(this.protector);
-            await this.tray.create();
 
             // Start web server
             const port = this.config.get('port', 3847);
@@ -57,15 +51,6 @@ class SnehDeviceProtector {
             // Stop monitoring
             if (this.protector) {
                 this.protector.stop();
-            }
-
-            // Close system tray
-            if (this.tray) {
-                try {
-                    this.tray.destroy();
-                } catch (error) {
-                    logger.error('❌ Error during shutdown:', error);
-                }
             }
 
             logger.info('✅ Device Protector shutdown complete');
@@ -102,7 +87,6 @@ class SnehDeviceProtector {
     }
 }
 
-// Application entry point
 async function main() {
     try {
         console.log(chalk.cyan('🛡️  Sneh Creation Device Protector'));
@@ -118,5 +102,4 @@ async function main() {
     }
 }
 
-// Start the application
 main();

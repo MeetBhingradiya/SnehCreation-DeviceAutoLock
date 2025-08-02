@@ -244,11 +244,11 @@ if ($Action -eq "lock") {
     $companyLabel.Location = New-Object System.Drawing.Point(20, 230)
     $companyLabel.TextAlign = [System.Drawing.ContentAlignment]::MiddleCenter
     
-    # Time and date display (DD/MM/YYYY HH:MM IST format)
+    # Time and date display (DD/MM/YYYY hh:mm AM/PM IST format)
     $timeLabel = New-Object System.Windows.Forms.Label
-    # Calculate IST time (UTC + 5:30) and format as DD/MM/YYYY HH:MM
+    # Calculate IST time (UTC + 5:30) and format as DD/MM/YYYY hh:mm AM/PM
     $istTime = [System.DateTime]::UtcNow.AddHours(5).AddMinutes(30)
-    $timeLabel.Text = $istTime.ToString("dd/MM/yyyy HH:mm") + " IST"
+    $timeLabel.Text = $istTime.ToString("dd/MM/yyyy hh:mm tt") + " IST"
     $timeLabel.Font = New-Object System.Drawing.Font("Segoe UI", 16)
     $timeLabel.ForeColor = [System.Drawing.Color]::FromArgb(80, 90, 110)
     $timeLabel.BackColor = [System.Drawing.Color]::Transparent
@@ -438,7 +438,15 @@ if ($Action -eq "lock") {
         $unlockButton.Invalidate()
     })
     
-    # Comprehensive key blocking
+    # Keep password box focused when clicking elsewhere on form
+    $form.Add_Click({
+        $passwordBox.Focus()
+    })
+    $centerPanel.Add_Click({
+        $passwordBox.Focus()
+    })
+    
+    # Auto-focus password box for alphanumeric input and comprehensive key blocking
     $form.Add_KeyDown({
         param($sender, $e)
         $blockedKeys = @(
@@ -459,6 +467,26 @@ if ($Action -eq "lock") {
             [System.Windows.Forms.Keys]::F12
         )
         
+        # Check if key is alphanumeric or common password characters
+        $isAlphanumeric = (($e.KeyCode -ge [System.Windows.Forms.Keys]::A -and $e.KeyCode -le [System.Windows.Forms.Keys]::Z) -or
+                          ($e.KeyCode -ge [System.Windows.Forms.Keys]::D0 -and $e.KeyCode -le [System.Windows.Forms.Keys]::D9) -or
+                          ($e.KeyCode -ge [System.Windows.Forms.Keys]::NumPad0 -and $e.KeyCode -le [System.Windows.Forms.Keys]::NumPad9) -or
+                          ($e.KeyCode -eq [System.Windows.Forms.Keys]::Space) -or
+                          ($e.KeyCode -eq [System.Windows.Forms.Keys]::OemPeriod) -or
+                          ($e.KeyCode -eq [System.Windows.Forms.Keys]::OemMinus) -or
+                          ($e.KeyCode -eq [System.Windows.Forms.Keys]::Oemplus) -or
+                          ($e.KeyCode -eq [System.Windows.Forms.Keys]::OemQuestion) -or
+                          ($e.KeyCode -eq [System.Windows.Forms.Keys]::Backspace) -or
+                          ($e.KeyCode -eq [System.Windows.Forms.Keys]::Delete))
+        
+        # Auto-focus password box if typing alphanumeric characters and not already focused
+        if ($isAlphanumeric -and -not $passwordBox.Focused) {
+            $passwordBox.Focus()
+            # Let the password box handle the key press
+            return
+        }
+        
+        # Block restricted keys
         if ($blockedKeys -contains $e.KeyCode -or
             ($e.Alt -and $e.KeyCode -eq [System.Windows.Forms.Keys]::F4) -or
             ($e.Alt -and $e.KeyCode -eq [System.Windows.Forms.Keys]::Tab) -or
@@ -478,13 +506,13 @@ if ($Action -eq "lock") {
         }
     })
     
-    # Update time every minute to save power (DD/MM/YYYY HH:MM IST format)
+    # Update time every minute to save power (DD/MM/YYYY hh:mm AM/PM IST format)
     $timeTimer = New-Object System.Windows.Forms.Timer
     $timeTimer.Interval = 60000  # Update every minute instead of every second
     $timeTimer.Add_Tick({
-        # Calculate IST time (UTC + 5:30) and format as DD/MM/YYYY HH:MM
+        # Calculate IST time (UTC + 5:30) and format as DD/MM/YYYY hh:mm AM/PM
         $istTime = [System.DateTime]::UtcNow.AddHours(5).AddMinutes(30)
-        $timeLabel.Text = $istTime.ToString("dd/MM/yyyy HH:mm") + " IST"
+        $timeLabel.Text = $istTime.ToString("dd/MM/yyyy hh:mm tt") + " IST"
     })
     $timeTimer.Start()
     
@@ -493,12 +521,22 @@ if ($Action -eq "lock") {
     $centerPanel.Controls.AddRange(@($logoPanel, $companyLabel, $timeLabel, $passwordContainer, $unlockButton, $errorLabel))
     $form.Controls.Add($centerPanel)
     
-    # Show form with focus
+    # Show form with focus and ensure password box gets focus
     $form.Add_Shown({
         $passwordBox.Focus()
         $form.Activate()
         $form.BringToFront()
         $form.Focus()
+        # Additional focus attempt after a short delay
+        $focusTimer = New-Object System.Windows.Forms.Timer
+        $focusTimer.Interval = 100
+        $focusTimer.Add_Tick({
+            param($timerSender, $timerE)
+            $passwordBox.Focus()
+            $timerSender.Stop()
+            $timerSender.Dispose()
+        })
+        $focusTimer.Start()
     })
     
     [System.Windows.Forms.Application]::Run($form)

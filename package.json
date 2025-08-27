@@ -2,21 +2,30 @@
     "name": "@sneh-creation/device-protector",
     "version": "1.0.1",
     "description": "Enterprise-grade device protection system for Windows 10/11 with auto-updates",
-    "main": "src/main.js",
+    "main": "dist/main.js",
     "type": "module",
+    "author": "Sneh Creation <contact@snehcreation.com>",
     "scripts": {
-        "dev": "bun run --watch src/main.js",
-        "start": "bun run src/main.js",
-        "test": "bun test",
+        "dev": "concurrently \"bun run build:watch\" \"bun run electron:dev\"",
+        "start": "bun run build && bun run electron",
+        "electron": "electron .",
+        "electron:dev": "wait-on dist/main.js && electron . --dev",
+        "build": "bun run build:main && bun run build:renderer && bun run build:preload && bun run build:settings",
+        "build:main": "bun build src/electron/main.ts --outfile=dist/main.js --target=node --format=esm --external=electron",
+        "build:renderer": "bun build src/renderer/index.ts --outfile=dist/renderer/index.js --target=browser",
+        "build:preload": "bun build src/renderer/preload.ts --outfile=dist/renderer/preload.js --target=node --format=cjs",
+        "build:settings": "bun build src/renderer/scripts/settings.ts --outfile=dist/renderer/settings.js --target=browser",
+        "build:watch": "bun run build:main --watch",
+        "test": "vitest",
+        "test:e2e": "playwright test",
+        "package": "bun run build && electron-builder",
+        "package:portable": "bun run build && electron-builder --win portable",
+        "package:installer": "bun run build && electron-builder --win nsis",
+        "package:all": "bun run build && electron-builder --win",
         "setup-startup": "powershell -ExecutionPolicy Bypass -File setup-startup-clean.ps1",
         "kill": "cmd /c kill.bat",
         "start:clean": "bun run kill && bun run start",
-        "demo": "bun run start:clean",
-        "build": "bun build src/main.js --compile --outfile=dist/device-protector.exe --target=bun-windows-x64",
-        "build:node": "pkg src/main.js --targets node18-win-x64 --output dist/device-protector-node.exe",
-        "build:portable": "bun run build && bun run package:portable",
-        "build:all": "bun run build && bun run build:node && bun run package:portable",
-        "package:portable": "powershell -ExecutionPolicy Bypass -File scripts/create-portable.ps1"
+        "demo": "bun run start:clean"
     },
     "keywords": [
         "device-protection",
@@ -41,18 +50,72 @@
         "node": ">=18.0.0"
     },
     "dependencies": {
+        "@types/conf": "^3.0.3",
         "chalk": "^5.4.1",
-        "conf": "^11.0.2",
+        "conf": "^14.0.0",
+        "crypto-js": "^4.2.0",
         "express": "^4.18.2",
+        "node-notifier": "^10.0.1",
+        "nodemailer": "^7.0.5",
         "winston": "^3.11.0"
     },
     "devDependencies": {
+        "@playwright/test": "^1.40.0",
+        "@types/crypto-js": "^4.2.1",
         "@types/node": "^20.8.0",
+        "@types/nodemailer": "^6.4.17",
         "bun-types": "latest",
-        "pkg": "^5.8.1"
+        "concurrently": "^8.2.2",
+        "electron": "^28.1.0",
+        "electron-builder": "^24.9.1",
+        "pkg": "^5.8.1",
+        "typescript": "^5.3.0",
+        "vitest": "^1.1.0",
+        "wait-on": "^7.2.0"
     },
     "optionalDependencies": {
-        "fsevents": "^2.3.3",
-        "node-notifier": "^10.0.1"
+        "fsevents": "^2.3.3"
+    },
+    "build": {
+        "appId": "com.snehcreation.deviceprotector",
+        "productName": "Sneh Creation Device Safety Control",
+        "directories": {
+            "output": "dist/packages"
+        },
+        "files": [
+            "dist/**/*",
+            "lock-screen.ps1",
+            "input-monitor.ps1",
+            "enterprise.jpg",
+            "assets/**/*",
+            "!src/**/*",
+            "!scripts/**/*",
+            "!logs/**/*"
+        ],
+        "win": {
+            "icon": "assets/icon.ico",
+            "target": [
+                {
+                    "target": "nsis",
+                    "arch": ["x64"]
+                },
+                {
+                    "target": "portable",
+                    "arch": ["x64"]
+                }
+            ]
+        },
+        "nsis": {
+            "oneClick": false,
+            "perMachine": true,
+            "allowElevation": true,
+            "allowToChangeInstallationDirectory": true,
+            "createDesktopShortcut": true,
+            "createStartMenuShortcut": true,
+            "shortcutName": "Sneh Creation Device Safety Control"
+        },
+        "portable": {
+            "artifactName": "sneh-creation-device-protecter-portable.exe"
+        }
     }
 }

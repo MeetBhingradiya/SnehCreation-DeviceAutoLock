@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Device Protector Settings</title>
+    <link rel="stylesheet" href="./styles/settings.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Title Bar -->
+        <div class="title-bar">
+            <div class="title-content">
+                <div class="app-icon">🛡️</div>
+                <span class="app-title">Device Protector Settings</span>
+            </div>
+            <div class="window-controls">
+                <button class="control-btn minimize" onclick="window.electronAPI.minimize()">−</button>
+                <button class="control-btn close" onclick="window.electronAPI.close()">×</button>
+            </div>
+        </div>
+
+        <div class="main-container">
+            <!-- Sidebar Navigation -->
+            <nav class="sidebar">
+                <div class="search-box">
+                    <input type="text" id="settingsSearch" placeholder="Find a setting" autocomplete="off">
+                    <span class="search-icon">🔍</span>
+                </div>
+                
+                <!-- Startup Warning -->
+                <div id="startupWarning" class="startup-warning" style="display: none;">
+                    <div class="warning-icon">⚠️</div>
+                    <div class="warning-text">
+                        <strong>Startup Notice</strong><br>
+                        App not set to start with Windows
+                    </div>
+                    <button id="enableStartupBtn" class="warning-btn">Enable</button>
+                </div>
+                
+                <div class="nav-sections">
+                    <div class="nav-section active" data-section="security">
+                        <div class="nav-icon">🔐</div>
+                        <span class="nav-text">Security</span>
+                    </div>
+                    <div class="nav-section" data-section="protection">
+                        <div class="nav-icon">🛡️</div>
+                        <span class="nav-text">Protection</span>
+                    </div>
+                    <div class="nav-section" data-section="notifications">
+                        <div class="nav-icon">🔔</div>
+                        <span class="nav-text">Notifications</span>
+                    </div>
+                    <div class="nav-section" data-section="appearance">
+                        <div class="nav-icon">🎨</div>
+                        <span class="nav-text">Appearance</span>
+                    </div>
+                    <div class="nav-section" data-section="advanced">
+                        <div class="nav-icon">⚙️</div>
+                        <span class="nav-text">Advanced</span>
+                    </div>
+                    <div class="nav-section" data-section="backup">
+                        <div class="nav-icon">💾</div>
+                        <span class="nav-text">Backup & Recovery</span>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Content Area -->
+            <main class="content-area">
+                <!-- Security Section -->
+                <section id="security" class="settings-section active">
+                    <div class="section-header">
+                        <h1>Security</h1>
+                        <p>Manage passwords and authentication settings</p>
+                    </div>
+
+                    <div class="settings-group">
+                        <h2>Passwords</h2>
+                        
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>Master Password</h3>
+                                <p>Developer override password for emergency access</p>
+                            </div>
+                            <div class="setting-control">
+                                <input type="password" id="masterPassword" placeholder="Enter master password">
+                                <button class="btn-primary" onclick="updateMasterPassword()">Update</button>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>User Password</h3>
+                                <p>Primary password for unlocking the device</p>
+                            </div>
+                            <div class="setting-control">
+                                <input type="password" id="userPassword" placeholder="Enter user password">
+                                <button class="btn-primary" onclick="updateUserPassword()">Update</button>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>Settings PIN</h3>
+                                <p>6-digit PIN required to access these settings</p>
+                            </div>
+                            <div class="setting-control">
+                                <button class="btn-secondary" onclick="generateNewPIN()">Generate New PIN</button>
+                                <span id="currentPinDisplay" class="pin-display">••••••</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="settings-group">
+                        <h2>Email Recovery</h2>
+                        
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>Recovery Email</h3>
+                                <p>Email address for PIN recovery via OTP</p>
+                            </div>
+                            <div class="setting-control">
+                                <input type="email" id="recoveryEmail" placeholder="Enter recovery email">
+                                <button class="btn-secondary" onclick="testEmail()">Test</button>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>Sender Email Configuration</h3>
+                                <p>SMTP settings for sending recovery emails</p>
+                            </div>
+                            <div class="setting-control">
+                                <button class="btn-secondary" onclick="openEmailConfig()">Configure Email</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Protection Section -->
+                <section id="protection" class="settings-section">
+                    <div class="section-header">
+                        <h1>Protection</h1>
+                        <p>Configure device protection and monitoring settings</p>
+                    </div>
+
+                    <div class="settings-group">
+                        <h2>Inactivity Detection</h2>
+                        
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>Lock Timeout</h3>
+                                <p>Time of inactivity before device locks (in seconds)</p>
+                            </div>
+                            <div class="setting-control">
+                                <input type="number" id="defaultTimeout" min="60" max="7200" step="30">
+                                <span class="unit">seconds</span>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>Maximum Unlock Attempts</h3>
+                                <p>Number of failed attempts before security lockdown</p>
+                            </div>
+                            <div class="setting-control">
+                                <input type="number" id="maxAttempts" min="3" max="20" step="1">
+                                <span class="unit">attempts</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="settings-group">
+                        <h2>Monitoring</h2>
+                        
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>Enable System Tray</h3>
+                                <p>Show application icon in system tray</p>
+                            </div>
+                            <div class="setting-control">
+                                <label class="toggle">
+                                    <input type="checkbox" id="enableTray">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>Current Status</h3>
+                                <p>View current protection status</p>
+                            </div>
+                            <div class="setting-control">
+                                <div class="status-display" id="currentStatus">
+                                    <div class="status-item">
+                                        <span class="status-label">Status:</span>
+                                        <span class="status-value" id="protectionStatus">Loading...</span>
+                                    </div>
+                                    <div class="status-item">
+                                        <span class="status-label">Last Activity:</span>
+                                        <span class="status-value" id="lastActivity">Loading...</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="settings-group">
+                        <h2>Testing</h2>
+                        
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>Test Lock Screen</h3>
+                                <p>Manually trigger the lock screen for testing</p>
+                            </div>
+                            <div class="setting-control">
+                                <button class="btn-warning" onclick="testLock()">Test Lock</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Notifications Section -->
+                <section id="notifications" class="settings-section">
+                    <div class="section-header">
+                        <h1>Notifications</h1>
+                        <p>Configure notification preferences</p>
+                    </div>
+
+                    <div class="settings-group">
+                        <h2>System Notifications</h2>
+                        
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>Enable Notifications</h3>
+                                <p>Show desktop notifications for security events</p>
+                            </div>
+                            <div class="setting-control">
+                                <label class="toggle">
+                                    <input type="checkbox" id="enableNotifications">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Appearance Section -->
+                <section id="appearance" class="settings-section">
+                    <div class="section-header">
+                        <h1>Appearance</h1>
+                        <p>Customize the look and feel</p>
+                    </div>
+
+                    <div class="settings-group">
+                        <h2>Theme</h2>
+                        
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>Color Theme</h3>
+                                <p>Choose between light and dark themes</p>
+                            </div>
+                            <div class="setting-control">
+                                <select id="theme">
+                                    <option value="dark">Dark</option>
+                                    <option value="light">Light</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>Language</h3>
+                                <p>Select your preferred language</p>
+                            </div>
+                            <div class="setting-control">
+                                <select id="language">
+                                    <option value="en">English</option>
+                                    <option value="gujarati">ગુજરાતી (Gujarati)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Advanced Section -->
+                <section id="advanced" class="settings-section">
+                    <div class="section-header">
+                        <h1>Advanced</h1>
+                        <p>Advanced configuration options</p>
+                    </div>
+
+                    <div class="settings-group">
+                        <h2>Windows Integration</h2>
+                        
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>Start with Windows</h3>
+                                <p>Automatically start Device Protector when Windows starts</p>
+                            </div>
+                            <div class="setting-control">
+                                <label class="toggle">
+                                    <input type="checkbox" id="startWithWindows">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>Start Minimized</h3>
+                                <p>Start the application minimized to system tray</p>
+                            </div>
+                            <div class="setting-control">
+                                <label class="toggle">
+                                    <input type="checkbox" id="startMinimized" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="settings-group">
+                        <h2>Updates</h2>
+                        
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>Auto Update</h3>
+                                <p>Automatically check for and install updates</p>
+                            </div>
+                            <div class="setting-control">
+                                <label class="toggle">
+                                    <input type="checkbox" id="autoUpdate">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>Auto Install Updates</h3>
+                                <p>Automatically install updates when downloaded</p>
+                            </div>
+                            <div class="setting-control">
+                                <label class="toggle">
+                                    <input type="checkbox" id="autoInstallUpdates">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>Update Server</h3>
+                                <p>Server URL for checking updates</p>
+                            </div>
+                            <div class="setting-control">
+                                <input type="url" id="updateServer" placeholder="https://api.github.com/repos/...">
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>Update Check Interval</h3>
+                                <p>How often to check for updates (in hours)</p>
+                            </div>
+                            <div class="setting-control">
+                                <select id="updateInterval">
+                                    <option value="1800000">30 minutes</option>
+                                    <option value="3600000">1 hour</option>
+                                    <option value="7200000">2 hours</option>
+                                    <option value="21600000">6 hours</option>
+                                    <option value="43200000">12 hours</option>
+                                    <option value="86400000">24 hours</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>Manual Update Check</h3>
+                                <p>Check for updates right now</p>
+                            </div>
+                            <div class="setting-control">
+                                <button class="btn-primary" id="checkUpdatesBtn" onclick="checkForUpdates()">
+                                    <span class="btn-text">Check for Updates</span>
+                                    <span class="btn-spinner" style="display: none;">🔄</span>
+                                </button>
+                                <div id="updateStatus" class="update-status"></div>
+                            </div>
+                        </div>
+
+                        <div class="setting-item" id="updateAvailable" style="display: none;">
+                            <div class="setting-info">
+                                <h3>Update Available</h3>
+                                <p id="updateVersionInfo">Version X.X.X is available</p>
+                            </div>
+                            <div class="setting-control">
+                                <button class="btn-primary" id="downloadUpdateBtn" onclick="downloadUpdate()">
+                                    Download Update
+                                </button>
+                                <div id="downloadProgress" class="progress-bar" style="display: none;">
+                                    <div class="progress-fill"></div>
+                                    <span class="progress-text">0%</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="setting-item" id="updateReady" style="display: none;">
+                            <div class="setting-info">
+                                <h3>Update Ready</h3>
+                                <p>Update has been downloaded and is ready to install</p>
+                            </div>
+                            <div class="setting-control">
+                                <button class="btn-primary" onclick="installUpdate()">
+                                    Install & Restart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="settings-group">
+                        <h2>Network</h2>
+                        
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>Web Interface Port</h3>
+                                <p>Port number for the web interface</p>
+                            </div>
+                            <div class="setting-control">
+                                <input type="number" id="port" min="1024" max="65535" step="1">
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Backup Section -->
+                <section id="backup" class="settings-section">
+                    <div class="section-header">
+                        <h1>Backup & Recovery</h1>
+                        <p>Manage configuration backups and recovery options</p>
+                    </div>
+
+                    <div class="settings-group">
+                        <h2>Configuration Backup</h2>
+                        
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>Export Settings</h3>
+                                <p>Save current configuration to a file</p>
+                            </div>
+                            <div class="setting-control">
+                                <button class="btn-primary" onclick="exportConfig()">Export Configuration</button>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>Import Settings</h3>
+                                <p>Restore configuration from a backup file</p>
+                            </div>
+                            <div class="setting-control">
+                                <input type="file" id="configFile" accept=".json" style="display: none;">
+                                <button class="btn-secondary" onclick="document.getElementById('configFile').click()">Import Configuration</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="settings-group">
+                        <h2>Recovery Codes</h2>
+                        
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>Backup Codes</h3>
+                                <p>Generate one-time use backup codes for emergency access</p>
+                            </div>
+                            <div class="setting-control">
+                                <button class="btn-warning" onclick="generateBackupCodes()">Generate Backup Codes</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- Notifications -->
+    <div id="notifications-container" class="notifications-container"></div>
+
+    <!-- Email Configuration Modal -->
+    <div id="emailConfigModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Email Configuration</h2>
+                <button class="modal-close" onclick="closeEmailConfig()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="smtpHost">SMTP Host</label>
+                    <input type="text" id="smtpHost" placeholder="smtp.gmail.com">
+                </div>
+                <div class="form-group">
+                    <label for="smtpPort">SMTP Port</label>
+                    <input type="number" id="smtpPort" placeholder="587">
+                </div>
+                <div class="form-group">
+                    <label for="smtpSecure">Use SSL/TLS</label>
+                    <label class="toggle">
+                        <input type="checkbox" id="smtpSecure">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label for="senderEmail">Sender Email</label>
+                    <input type="email" id="senderEmail" placeholder="your-email@domain.com">
+                </div>
+                <div class="form-group">
+                    <label for="senderPassword">Email Password</label>
+                    <input type="password" id="senderPassword" placeholder="App password or email password">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeEmailConfig()">Cancel</button>
+                <button class="btn-primary" onclick="saveEmailConfig()">Save Configuration</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../dist/renderer/settings.js"></script>
+</body>
+</html>

@@ -1,0 +1,329 @@
+/* PIN Dialog Styles */
+:root {
+    --primary-color: #0078d4;
+    --primary-hover: #106ebe;
+    --surface-color: #ffffff;
+    --text-primary: #323130;
+    --text-secondary: #605e5c;
+    --border-color: #edebe9;
+    --error-color: #d13438;
+    --success-color: #107c10;
+    --border-radius: 6px;
+    --shadow: 0 4px 20px rgba(0,0,0,0.3);
+    --transition: all 0.2s ease;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+.pin-container {
+    background: var(--surface-color);
+    border-radius: 12px;
+    padding: 40px;
+    width: 100%;
+    max-width: 450px;
+    box-shadow: var(--shadow);
+    text-align: center;
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.pin-header {
+    margin-bottom: 32px;
+}
+
+.security-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    display: block;
+}
+
+.pin-header h2 {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+}
+
+.pin-header p {
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.pin-content,
+.otp-content {
+    margin-bottom: 24px;
+}
+
+.pin-input-container {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.pin-input,
+.otp-input {
+    width: 48px;
+    height: 48px;
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius);
+    text-align: center;
+    font-size: 24px;
+    font-weight: 600;
+    outline: none;
+    transition: var(--transition);
+    background: var(--surface-color);
+}
+
+.pin-input:focus,
+.otp-input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(0, 120, 212, 0.2);
+}
+
+.pin-input:valid,
+.otp-input:valid {
+    border-color: var(--success-color);
+}
+
+.pin-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: center;
+}
+
+.btn-primary {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 12px 32px;
+    border-radius: var(--border-radius);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    min-width: 140px;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background: var(--primary-hover);
+}
+
+.btn-primary:disabled {
+    background: #cccccc;
+    cursor: not-allowed;
+}
+
+.btn-link {
+    background: none;
+    border: none;
+    color: var(--primary-color);
+    font-size: 14px;
+    cursor: pointer;
+    text-decoration: underline;
+    transition: var(--transition);
+}
+
+.btn-link:hover {
+    color: var(--primary-hover);
+}
+
+.error-message {
+    margin-top: 16px;
+    padding: 12px;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: var(--border-radius);
+    color: var(--error-color);
+    font-size: 14px;
+    display: none;
+}
+
+.otp-timer {
+    margin-top: 20px;
+    padding: 12px;
+    background: #f0f9ff;
+    border: 1px solid #bae6fd;
+    border-radius: var(--border-radius);
+    color: #0369a1;
+    font-size: 14px;
+}
+
+.otp-timer p {
+    margin: 0;
+}
+
+#timer {
+    font-weight: 600;
+    font-family: monospace;
+}
+
+/* Success state */
+.pin-input.success,
+.otp-input.success {
+    border-color: var(--success-color);
+    background: #f0fdf4;
+}
+
+/* Error state */
+.pin-input.error,
+.otp-input.error {
+    border-color: var(--error-color);
+    background: #fef2f2;
+    animation: shake 0.4s ease;
+}
+
+@keyframes shake {
+    0%, 20%, 40%, 60%, 80% {
+        transform: translateX(-2px);
+    }
+    10%, 30%, 50%, 70%, 90% {
+        transform: translateX(2px);
+    }
+}
+
+/* Loading state */
+.loading {
+    position: relative;
+    overflow: hidden;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+    0% {
+        left: -100%;
+    }
+    100% {
+        left: 100%;
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+    .pin-container {
+        margin: 20px;
+        padding: 32px 24px;
+    }
+    
+    .pin-input,
+    .otp-input {
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+    }
+    
+    .pin-input-container {
+        gap: 8px;
+    }
+    
+    .security-icon {
+        font-size: 40px;
+    }
+    
+    .pin-header h2 {
+        font-size: 20px;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --surface-color: #2d2d30;
+        --text-primary: #ffffff;
+        --text-secondary: #cccccc;
+        --border-color: #3e3e42;
+    }
+    
+    body {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    }
+    
+    .error-message {
+        background: #2d1b1b;
+        border-color: #5c2626;
+        color: #ff6b6b;
+    }
+    
+    .otp-timer {
+        background: #1e2a3a;
+        border-color: #2563eb;
+        color: #60a5fa;
+    }
+    
+    .pin-input.success,
+    .otp-input.success {
+        background: #1e2a1e;
+    }
+    
+    .pin-input.error,
+    .otp-input.error {
+        background: #2a1e1e;
+    }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+    .pin-input,
+    .otp-input {
+        border-width: 3px;
+    }
+    
+    .btn-primary {
+        border: 2px solid var(--primary-color);
+    }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .pin-container {
+        animation: none;
+    }
+    
+    .pin-input,
+    .otp-input,
+    .btn-primary,
+    .btn-link {
+        transition: none;
+    }
+    
+    .pin-input.error,
+    .otp-input.error {
+        animation: none;
+    }
+}

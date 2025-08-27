@@ -3,45 +3,39 @@
         "target": "ES2022",
         "module": "ESNext",
         "moduleResolution": "bundler",
-        "noEmit": true,
-        "allowJs": true,
-        "allowImportingTsExtensions": true,
-        "allowSyntheticDefaultImports": true,
+        "outDir": "./dist/packages/win-unpacked/scripts",
+        "rootDir": "./src",
+        "strict": true,
         "esModuleInterop": true,
         "forceConsistentCasingInFileNames": true,
-        "strict": true,
-        "noImplicitAny": true,
         "skipLibCheck": true,
         "resolveJsonModule": true,
-        "outDir": "./dist",
-        "rootDir": "./src",
+        "allowSyntheticDefaultImports": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "declaration": true,
+        "sourceMap": true,
         "baseUrl": ".",
         "paths": {
-            "@/*": [
-                "./src/*"
-            ],
-            "@ui/*": [
-                "./src/ui/*"
-            ],
-            "@utils/*": [
-                "./src/utils/*"
-            ],
-            "@config/*": [
-                "./config/*"
-            ]
-        }
+            "@/*": ["./src/*"],
+            "@electron/*": ["./src/electron/*"],
+            "@renderer/*": ["./src/renderer/*"],
+            "@shared/*": ["./src/shared/*"],
+            "@utils/*": ["./src/utils/*"],
+            "@config/*": ["./src/config/*"]
+        },
+        "types": ["node", "electron"]
     },
     "include": [
-        "src/**/*",
-        "*.ts",
-        "*.tsx"
+        "src/**/*"
     ],
     "exclude": [
         "node_modules",
         "dist",
-        "**/*.test.js"
-    ],
-    "types": [
-        "bun-types"
+        "**/*.test.ts",
+        "**/*.spec.ts",
+        "build.config.ts",
+        "vitest.config.ts",
+        "tests/**/*"
     ]
 }

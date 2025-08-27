@@ -1,0 +1,16 @@
+{
+	"company": "Sneh Creation",
+	"masterPassword": "Master@1234",
+	"userPassword": "User@1234",
+	"defaultTimeout": 600,
+	"maxAttempts": 10,
+	"port": 3850,
+	"updateServer": "https://api.github.com/repos/MeetBhingradiya/SnehCreation-DeviceAutoLock/releases",
+	"updateInterval": 3600000,
+	"autoUpdate": true,
+	"enableTray": true,
+	"enableNotifications": true,
+	"theme": "dark",
+	"language": "en",
+	"settingsPin": "1c57bfcc43ffde1431d61ca390ff9d802a190cf0ab32a4a0f9eb0eda9d563ed4"
+}
